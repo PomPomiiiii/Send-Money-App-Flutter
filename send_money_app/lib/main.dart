@@ -32,6 +32,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
 
   // --- Local state ---
   double _balance = 5000;
+  double _transactionFee = 10;
   bool _isLoading = false;
   bool _touched = false; // becomes true once the user tries to submit
   String? _lastRecipient;
@@ -49,7 +50,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   // --- Validation logic, kept separate from the widget tree for clarity ---
   String? get _recipientError {
     if (!_touched) return null;
-    if (_recipientController.text.trim().isEmpty) return 'Recipient is required';
+    if (_recipientController.text.trim().isEmpty)
+      return 'Recipient is required';
     return null;
   }
 
@@ -83,7 +85,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     final amount = double.parse(_amountController.text);
 
     setState(() {
-      _balance -= amount;
+      _balance -= amount + _transactionFee;
       _lastRecipient = _recipientController.text;
       _lastAmount = amount;
       _isLoading = false;
@@ -131,11 +133,15 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Available balance', style: TextStyle(color: Colors.white70, fontSize: 12)),
+              const Text('Available balance',
+                  style: TextStyle(color: Colors.white70, fontSize: 12)),
               const SizedBox(height: 4),
               Text(
                 '₱${_balance.toStringAsFixed(2)}',
-                style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -164,6 +170,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             labelText: 'Amount (PHP)',
             hintText: '0.00',
             errorText: _amountError,
+            helperText:
+                'Transaction fee: ₱${_transactionFee.toStringAsFixed(2)}',
             border: const OutlineInputBorder(),
           ),
         ),
@@ -177,11 +185,13 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
               ? const SizedBox(
                   width: 16,
                   height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white),
                 )
               : const Icon(Icons.send),
           label: Text(_isLoading ? 'Sending...' : 'Send Money'),
-          style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+          style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16)),
         ),
       ],
     );
@@ -194,11 +204,13 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
         children: [
           const Icon(Icons.check_circle, color: Colors.green, size: 64),
           const SizedBox(height: 16),
-          const Text('Transfer successful', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+          const Text('Transfer successful',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           Text('Sent ₱${_lastAmount!.toStringAsFixed(2)} to $_lastRecipient'),
           const SizedBox(height: 8),
-          Text('New balance: ₱${_balance.toStringAsFixed(2)}', style: const TextStyle(color: Colors.grey)),
+          Text('New balance: ₱${_balance.toStringAsFixed(2)}',
+              style: const TextStyle(color: Colors.grey)),
           const SizedBox(height: 24),
           FilledButton(onPressed: _reset, child: const Text('Send another')),
         ],
