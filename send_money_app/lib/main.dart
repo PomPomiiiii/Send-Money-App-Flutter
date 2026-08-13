@@ -32,7 +32,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
 
   // --- Local state ---
   double _balance = 5000;
-  double _transactionFee = 10;
+  final _transactionFee = 10;
   bool _isLoading = false;
   bool _touched = false; // becomes true once the user tries to submit
   String? _lastRecipient;
@@ -50,8 +50,9 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   // --- Validation logic, kept separate from the widget tree for clarity ---
   String? get _recipientError {
     if (!_touched) return null;
-    if (_recipientController.text.trim().isEmpty)
+    if (_recipientController.text.trim().isEmpty){
       return 'Recipient is required';
+    }
     return null;
   }
 
